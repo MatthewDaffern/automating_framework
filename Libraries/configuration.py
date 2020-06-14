@@ -13,12 +13,7 @@ from hashlib import sha3_256
 #     2. difference the results between that and the last saved read config(read.json)
 #     3. for those that are different, apply the constituent elements of the write config(write.json)
 #     4. after that, save your state in read.json
-#
-# Now, you may ask. Why don't you just write some quick Napalm code and be done? Well, I don't work in an environment
-# That has compatible napalm drivers for much of my stuff, and I want to be able to write 'configs'
-# For any type of device that has the ability to connect via SSH. Many of the computers in my environment don't support
-# WinRM because it's been removed, and I certainly won't be able to install Ansible.
-# This is my work around for all of that.
+
 
 def elements_to_first_level(dict_input, key_value):
     return dict_input[key_value]
