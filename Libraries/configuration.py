@@ -2,7 +2,8 @@ import json
 from functools import partial
 from nornir import InitNornir
 from nornir.plugins.tasks import commands
-
+from Crypto.Cipher import AES
+from hashlib import sha3_256
 
 # =====================================================================================================================
 # Functions that pull the config
@@ -109,9 +110,25 @@ def load_config(json_file):
     return json.load(config)
 
 
+def create_hash(passphrase):
+    hash_object = sha3_256(str.encode(passphrase))
+    return hash_object.digest()
+
+
 # the goal is to grab the actual password and encrypt each one on the nornir config.
 def encrypt_password(config, passphrase):
     password = config['config']['actual_password']
+    cipher = AES.new(create_hash(passphrase), AES.MODE_EAX)
+    encrypted_password = cipher.encrypt_and_digest(password)
+    config['config']['actual_password'] = [encrypted_password, cipher.nonce]
+    return config
+
+
+def decrypt_password(config, passphrase):
+    password = config['config']['actual_password']
+    cipher = AES.new(create_hash(passphrase), AES.MODE_EAX, password[1])
+    decrypted_password = cipher.decrypt(password)
+    return decrypted_password
 
 
 # passed
@@ -156,39 +173,3 @@ def send_commands_and_recieve_standardized_output(nornir_object, device_name, co
 # compare the old with the new
 # difference the two
 # write the 'config'
-
-# New Driver Rules:
-#    All commands will be wrapped up in a dictionary
-#    All commands will have the 'interface' as the key
-#       password, VLAN, so on and so forth
-#       the actual command and result will be in another set of key values.
-#       so, the format of the JSON will be:
-# {
-#    'credentials' :{
-#        'command' : 'enable secret test',
-#        'result'  : 'none'
-#
-#    }
-# }
-
-
-'''
-{'config': 
-    {'credentials':
-        {'command': 'use_this', 
-         'result': 'lolnah'
-        }, 
-     'vlan':/
-         {'command': 'show vlan', 
-          'result': 'lol'},
-    'address':
-         {'command': 'set IP', 
-          'result': 'donzo'}
-    }
-}
-
-def compare_config(old_config, new_config):
-    names = list(old_config['config'].keys())
-
-[v for v in foo.values() if 10 in v.values()]
-'''
