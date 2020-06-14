@@ -61,15 +61,22 @@ def config_action(nornir_object, list_of_commands):
     print(list_of_commands)
     results = dict()
     for i in list_of_commands:
-        results[i] = results.append(nornir_object.run(task=commands.remote_command, command=i))
+        results[i] = nornir_object.run(task=commands.remote_command, command=i)
     return results
 
 
 def save_the_output(results, config):
+    """overwrites the results"""
     config_elements = elements_to_first_level(config, 'config')
     for i in config_elements.keys():
         config_elements[i]['result'] = results[i]
     return {'config': config_elements}
+
+
+def write_to_config(config, file_name):
+    with open(file_name, 'w+') as config_file:
+        json.dump(config_file, config)
+    return str.join('', (file_name, ' ', 'has been saved'))
 
 
 # PASS
@@ -96,19 +103,13 @@ def filter_by_name(nornir_object, filter_name):
     return nornir_object.filter(filter_func=lambda h: name(h.name)).inventory.hosts
 
 
-
-
-
-
-
 # passed
 def load_config(json_file):
     config = open(json_file, 'r+')
     return json.load(config)
 
 
-
-#the goal is to grab the actual password and encrypt each one on the nornir config.
+# the goal is to grab the actual password and encrypt each one on the nornir config.
 def encrypt_password(config, passphrase):
     password = config['config']['actual_password']
 
@@ -135,11 +136,12 @@ def save_the_state(applied_config, original_config):
 
 # =========================================================================
 
-def send_commands_and_recieve_standardized_output(nornir_object, device_name, config):
+def send_commands_and_recieve_standardized_output(nornir_object, device_name, config, file_path):
     single_device = filter_by_name(nornir_object, device_name)
     processed_config = save_the_output(config_action(single_device, get_command_list(config)), config)
+    config_path = str.join('', (file_path, '\\', 'read.json'))
+    write_to_config(processed_config, config_path)
     return processed_config
-
 
 
 # Generic code basically does the following:
