@@ -1,0 +1,8 @@
+Test Plan.
+
+Finish the test config
+
+1. Create a fake but valid config.
+2. Create valid command configs for a pretend switch
+3. test each function in the configuration script
+4. create main() in the configuration script.

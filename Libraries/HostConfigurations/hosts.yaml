@@ -1,0 +1,61 @@
+---
+stub1.city_of_san_jose:
+    hostname: 10.128.86.86
+    port: 22
+    username: you_wish
+    password: you_wish
+    platform: SG350
+    groups:
+        - city_of_san_jose
+    data:
+        site: city_of_san_jose
+        role: network
+        type: switch
+stub2.city_of_san_jose:
+    hostname: 10.128.86.86
+    port: 22
+    username: you_wish
+    password: you_wish
+    platform: SG350
+    groups:
+        - city_of_san_jose
+    data:
+        site: city_of_san_jose
+        role: network
+        type: switch
+stub3.city_of_san_jose:
+    hostname: 10.128.86.86
+    port: 22
+    username: you_wish
+    password: you_wish
+    platform: SG350
+    groups:
+        - city_of_san_jose
+    data:
+        site: city_of_san_jose
+        role: network
+        type: switch
+stub4.city_of_san_jose:
+    hostname: 10.128.86.86
+    port: 22
+    username: you_wish
+    password: you_wish
+    platform: SG350
+    groups:
+        - city_of_san_jose
+    data:
+        site: city_of_san_jose
+        role: network
+        type: switch
+stub5.city_of_san_jose:
+    hostname: 10.128.86.86
+    port: 22
+    username: you_wish
+    password: you_wish
+    platform: SG350
+    groups:
+        - city_of_san_jose
+    data:
+        site: city_of_san_jose
+        role: network
+        type: switch

@@ -1,0 +1,6 @@
+
+---
+city_of_san_jose:
+  data:
+    vlans:
+      101: management
