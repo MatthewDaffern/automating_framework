@@ -1,0 +1,27 @@
+{"config": 
+    {"credentials":
+        {"command": "enable; exit", 
+         "result": "lolnah"}, 
+     "switch information":
+         {"command": "set system name SD1758888_core_switch; hostname SD1758888_core_switch; banner motd c Please contact your engineer before making changes c; set system contact System Engineering; exit", 
+          "result": "lol"},
+    "clock information":
+         {"command": "clock source sntp; sntp server 10.45.0.251 pool; exit", 
+          "result": "donzo"},
+    "clock polling":
+         {"command": "clock timezone PST -8; clock summer-time web recurring usa; exit", 
+          "result": "donzo"},
+    "access configuration":
+         {"command": "clock source sntp; sntp server 10.45.0.251 pool; exit", 
+          "result": "donzo"},
+    "disable pnp":
+          {"command": "no pnp enable; exit", 
+           "result": "donzo"},
+    "change ssh password":
+           {"command": "line ssh; username skidata; password SD1758888@S3ntry; exit; exit", 
+            "result": "donzo"},
+    "management interface":
+          {"command": "interface vlan 101; name Network;ip address 10.45.0.211 255.255.0.0 10.45.0.1; exit; ip http server; exit", 
+           "result": "donzo"}
+    }
+}

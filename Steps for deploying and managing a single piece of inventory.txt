@@ -1,0 +1,18 @@
+Steps for deploying and managing a single piece of inventory.
+
+
+
+Connect
+get config
+check config against desired config
+run commands on the differential between that and the config.
+check new config
+exit
+
+
+Steps for deploying and managing ALL inventory.
+
+Load inventory into memory
+check for 'correct inventory'
+run commands on remaining inventory
+print the command results to stdout.
