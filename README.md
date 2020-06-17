@@ -1,2 +1,2 @@
 # automating_framwork
-an Ansible replacement for when actual ansible isn't allowed to be used, but many devices are still SSH capable.
+an Ansible replacement for when actual ansible isn't allowed in the environment, but many devices are still SSH capable.
