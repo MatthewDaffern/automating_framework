@@ -10,6 +10,52 @@ def expose_password_attribute(nornir_object, passphrase):
     list_of_hosts = list(nornir_object.inventory.hosts)
 
 
+
+
+test = dict()
+test['config'] = dict()
+test['config']['actual_password'] = 'lol'
+
+result = functions.encrypt_password(test, 'fudge')
+result2 = functions.decrypt_password(result, 'fudge')
+
+print(result2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 filter_group = functions.filter_by_name(nornir_object, 'SG350')
 
 old_dict = dict()

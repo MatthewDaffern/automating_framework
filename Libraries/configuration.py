@@ -15,21 +15,21 @@ from hashlib import sha3_256
 #     4. after that, save your state in read.json
 
 
-def elements_to_first_level(dict_input, key_value):
-    return dict_input[key_value]
+def elements_to_first_level(dict_input, key_value_input):
+    return dict_input[key_value_input]
 
 
-def get_list_of_elements(dict_input, key_value):
-    return list(dict_input[key_value].keys())
+def get_list_of_elements(dict_input, key_value_input):
+    return list(dict_input[key_value_input].keys())
 
 
-def unapplied_parameters(old_dict, new_dict):
+def unapplied_inputs(old_dict_input, new_dict_input):
     """the goal is to be able to parse any config so to speak, and apply the uncommitted changes
            regardless of platform or architecture.
            The goal is to be able to only write commands that haven't been configured yet."""
     key_value_string = 'config'
-    old_dict_converted = elements_to_first_level(old_dict, key_value_string)
-    new_dict_converted = elements_to_first_level(new_dict, key_value_string)
+    old_dict_converted = elements_to_first_level(old_dict_input, key_value_string)
+    new_dict_converted = elements_to_first_level(new_dict_input, key_value_string)
     list_of_elements = old_dict_converted.keys()
     difference_dict = dict()
     for i in list_of_elements:
@@ -54,19 +54,18 @@ def get_command_list(config_object):
 def config_action(nornir_object, list_of_commands):
     """This will allow you to get or apply the list of commands.
     All you need is for it to be a list of commands and a single host"""
-    print(list_of_commands)
-    results = dict()
+    command_dict = dict()
     for i in list_of_commands:
-        results[i] = nornir_object.run(task=commands.remote_command, command=i)
-    return results
+        command_dict[i] = nornir_object.run(task=commands.remote_command, command=i)
+    return command_dict
 
 
 def save_the_output(results, config):
     """overwrites the results"""
-    config_elements = elements_to_first_level(config, 'config')
-    for i in config_elements.keys():
-        config_elements[i]['result'] = results[i]
-    return {'config': config_elements}
+    config_sections = elements_to_first_level(config, 'config')
+    for i in config_sections.keys():
+        config_sections[i]['result'] = results[i]
+    return {'config': config_sections}
 
 
 def write_to_config(config, file_name):
@@ -104,25 +103,26 @@ def load_config(json_file):
     config = open(json_file, 'r+')
     return json.load(config)
 
-
-def create_hash(passphrase):
-    hash_object = sha3_256(str.encode(passphrase))
+# Pass
+def create_hash(pass_phrase_input):
+    hash_object = sha3_256(str.encode(pass_phrase_input))
     return hash_object.digest()
 
 
-# the goal is to grab the actual password and encrypt each one on the nornir config.
-def encrypt_password(config, passphrase):
-    password = config['config']['actual_password']
-    cipher = AES.new(create_hash(passphrase), AES.MODE_EAX)
-    encrypted_password = cipher.encrypt_and_digest(password)
+# Pass
+def encrypt_password(config, pass_phrase_input):
+    password = str.encode(config['config']['actual_password'])
+    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
+    encrypted_password = cipher.encrypt(password)
     config['config']['actual_password'] = [encrypted_password, cipher.nonce]
     return config
 
-
-def decrypt_password(config, passphrase):
+# Pass
+def decrypt_password(config, pass_phrase_input):
     password = config['config']['actual_password']
-    cipher = AES.new(create_hash(passphrase), AES.MODE_EAX, password[1])
-    decrypted_password = cipher.decrypt(password)
+    hashy = create_hash(pass_phrase_input)
+    cipher = AES.new(hashy, AES.MODE_EAX, password[1])
+    decrypted_password = bytes.decode(cipher.decrypt(password[0]))
     return decrypted_password
 
 
