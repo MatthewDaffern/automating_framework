@@ -2,25 +2,29 @@ import Libraries.configuration as functions
 
 nornir_object = functions.init_nornir('config.yaml')
 
-for i in nornir_object.inventory.hosts:
-    print(i)
-
 
 def expose_password_attribute(nornir_object, passphrase):
     list_of_hosts = list(nornir_object.inventory.hosts)
-
-
-
 
 test = dict()
 test['config'] = dict()
 test['config']['actual_password'] = 'lol'
 
+for i in nornir_object.inventory.hosts:
+    print('host password')
+    print(nornir_object.inventory.hosts[i].password)
+
 result = functions.encrypt_password(test, 'fudge')
 result2 = functions.decrypt_password(result, 'fudge')
 
-print(result2)
 
+# Notes for decrypting passwords in memory.
+# Get list of hosts?
+# Get Config for Host?
+# Set Password on Nornir?
+# Write Config Action?
+# Encrypt Password on Nornir?
+# Should I also encrypt the entire host file?
 
 
 

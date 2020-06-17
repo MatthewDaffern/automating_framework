@@ -103,6 +103,7 @@ def load_config(json_file):
     config = open(json_file, 'r+')
     return json.load(config)
 
+
 # Pass
 def create_hash(pass_phrase_input):
     hash_object = sha3_256(str.encode(pass_phrase_input))
@@ -110,20 +111,39 @@ def create_hash(pass_phrase_input):
 
 
 # Pass
-def encrypt_password(config, pass_phrase_input):
-    password = str.encode(config['config']['actual_password'])
+def encrypt_string(string_input, pass_phrase_input):
     cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
-    encrypted_password = cipher.encrypt(password)
-    config['config']['actual_password'] = [encrypted_password, cipher.nonce]
-    return config
+    encrypted_password = cipher.encrypt(string_input)
+    return encrypted_password, cipher.nonce
+
 
 # Pass
-def decrypt_password(config, pass_phrase_input):
-    password = config['config']['actual_password']
-    hashy = create_hash(pass_phrase_input)
-    cipher = AES.new(hashy, AES.MODE_EAX, password[1])
-    decrypted_password = bytes.decode(cipher.decrypt(password[0]))
+def decrypt_string(encrypted_tuple, pass_phrase_input):
+    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX, encrypted_tuple[1])
+    decrypted_password = bytes.decode(cipher.decrypt(encrypted_tuple[0]))
     return decrypted_password
+
+
+# Pass
+def encrypt_config_password(config_input, pass_phrase_input):
+    config_input['config']['actual_password'] = \
+        encrypt_string(config_input['config']['actual_password'], pass_phrase_input)
+    return config_input
+
+
+# Pass
+def decrypt_config_password(config_input, pass_phrase_input):
+    config_input['config']['actual_password'] = \
+        decrypt_string(config_input['config']['actual_password'], pass_phrase_input)
+    return config_input
+
+
+def encrypt_file(file_name, pass_phrase_input):
+    with open(file_name, 'wb') as config_file_target:
+        for i in encrypt_string(config_file_target.read(), pass_phrase_input):
+            config_file_target.write(i)
+    return 'config has been encrypted'
+
 
 
 # passed
