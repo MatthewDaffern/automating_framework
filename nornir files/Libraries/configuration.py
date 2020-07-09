@@ -113,7 +113,7 @@ def create_hash(pass_phrase_input):
 # Pass
 def encrypt_string(string_input, pass_phrase_input):
     cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
-    encrypted_password = cipher.encrypt(string_input)
+    encrypted_password = cipher.encrypt(str.encode(string_input))
     return encrypted_password, cipher.nonce
 
 
@@ -188,3 +188,7 @@ def send_commands_and_recieve_standardized_output(nornir_object, device_name, co
 # compare the old with the new
 # difference the two
 # write the 'config'
+
+
+# How is a config selected and applied ?
+# probably should describe it in the UI.
