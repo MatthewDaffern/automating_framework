@@ -2,15 +2,20 @@ import datetime
 import json
 import paramiko
 import subprocess
-
+from Crypto.Cipher import AES
+import pathlib
+from functools import reduce
 
 def main_menu():
     print('welcome to the automation script\n\n'
-          'please let me know whether you wish to configure one device or all of them\n')
+          'please let me know whether you wish to configure one device or all of them\n'
+          'if you have a new config, please type in new.')
     result = input()
     if result == 'one':
         return result
     if result == 'all':
+        return result
+    if result == 'new':
         return result
     else:
         return main_menu()
@@ -21,12 +26,11 @@ def one_device(device_list):
     qty = range(0, len(list_of_device_names))
     for i in qty:
         print(str.join('', (str(i), ': ', list_of_device_names[i])))
-    print('\n\nOf the above devices which do you want to configure? Please type in the number.')
-    input()
-    if i not in list(map(lambda x: str(x), list(qty))):
+    choice = input('\n\nOf the above devices which do you want to configure? Please type in the number.')
+    if choice not in list(map(lambda x: str(x), list(qty))):
         return one_device(device_list)
     else:
-        return device_list[list_of_device_names[i]]
+        return device_list[list_of_device_names[int(choice)]]
 
 
 def all_devices(device_list):
@@ -39,11 +43,13 @@ def all_devices(device_list):
     return device_list
 
 
-def one_or_all(choice_input, device_list):
+def one_or_all_or_new(choice_input, device_list):
     if choice_input == 'one':
         return one_device(device_list)
     if choice_input == 'all':
         return all_devices(device_list)
+    if choice_input == 'new':
+        return encrypt_config()
 
 
 def local_script(device_name, environment_config):
@@ -109,13 +115,52 @@ def final_analysis(environment_config, device_list, log_location):
     return environment_config
 
 
+# Pass
+def create_hash(pass_phrase_input):
+    hash_object = sha3_256(str.encode(pass_phrase_input))
+    return hash_object.digest()
+
+
+# Pass
+def encrypt_string(string_input, pass_phrase_input):
+    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
+    encrypted_password = cipher.encrypt(str.encode(string_input))
+    return encrypted_password, cipher.nonce
+
+
+# Pass
+def decrypt_string(encrypted_tuple, pass_phrase_input):
+    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX, encrypted_tuple[1])
+    decrypted_password = bytes.decode(cipher.decrypt(encrypted_tuple[0]))
+    return decrypted_password
+
+
+def decrypt(environment_config, password):
+    device_list = environment_config['site'].keys()
+    for i in device_list:
+        environment_config['site'][i]['username'] = decrypt_string(environment_config['site'][i]['username'], password)
+        environment_config['site'][i]['password'] = decrypt_string(environment_config['site'][i]['password'], password)
+        environment_config['site'][i]['hostname'] = decrypt_string(environment_config['site'][i]['hostname'], password)
+    return environment_config
+
+def encrypt(environment_config, password):
+    device_list = environment_config['site'].keys()
+    for i in device_list:
+        environment_config['site'][i]['username'] = encrypt_string(environment_config['site'][i]['username'], password)
+        environment_config['site'][i]['password'] = encrypt_string(environment_config['site'][i]['password'], password)
+        environment_config['site'][i]['hostname'] = encrypt_string(environment_config['site'][i]['hostname'], password)
+    return environment_config
+
+
+
 def main(environment_config, log_location):
-    environment_config_decrypted = json.loads(dump(decrypt(environment_config)))
-    return final_analysis(configure_device(one_or_all(main_menu(),
+    password = create_hash(input('please input your password\n'))
+    environment_config_decrypted = json.loads(dump(decrypt(environment_config, password)))
+    return encrypt(final_analysis(configure_device(one_or_all_or_new(main_menu(),
                                                       list(environment_config_decrypted['site'].keys())),
                                            environment_config_decrypted),
                           list(environment_config_decrypted['site'].keys()),
-                          log_location)
+                          log_location), password)
 
 
 if __name__ == '__main__':

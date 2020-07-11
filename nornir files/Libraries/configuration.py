@@ -105,26 +105,6 @@ def load_config(json_file):
 
 
 # Pass
-def create_hash(pass_phrase_input):
-    hash_object = sha3_256(str.encode(pass_phrase_input))
-    return hash_object.digest()
-
-
-# Pass
-def encrypt_string(string_input, pass_phrase_input):
-    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
-    encrypted_password = cipher.encrypt(str.encode(string_input))
-    return encrypted_password, cipher.nonce
-
-
-# Pass
-def decrypt_string(encrypted_tuple, pass_phrase_input):
-    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX, encrypted_tuple[1])
-    decrypted_password = bytes.decode(cipher.decrypt(encrypted_tuple[0]))
-    return decrypted_password
-
-
-# Pass
 def encrypt_config_password(config_input, pass_phrase_input):
     config_input['config']['actual_password'] = \
         encrypt_string(config_input['config']['actual_password'], pass_phrase_input)
