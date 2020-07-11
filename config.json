@@ -8,7 +8,8 @@
         "read_config": ["1", "2", "3"],
         "write_config": ["1", "2", "3"],
         "temporary_write_config": ["1", "2", "3"],
-        "remote_or_local_script": "remote", "hostname": "127.0.0.1"
+        "remote_or_local_script": "remote",
+        "hostname": "127.0.0.1"
       },
     "server":
       {
@@ -18,7 +19,8 @@
         "read_config": ["1", "2", "3"],
         "write_config": ["1", "2", "3"],
         "temporary_write_config": ["1", "2", "3"],
-        "remote_or_local_script": "remote", "hostname": "127.0.0.1"
+        "remote_or_local_script": "remote",
+        "hostname": "127.0.0.1"
 
       },
     "switch":
@@ -29,7 +31,8 @@
         "read_config": ["1", "2", "3"],
         "write_config": ["1", "2", "3"],
         "temporary_write_config": ["1", "2", "3"],
-        "remote_or_local_script": "remote", "hostname": "127.0.0.1"
+        "remote_or_local_script": "remote",
+        "hostname": "127.0.0.1"
 
       }
   }
