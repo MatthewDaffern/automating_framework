@@ -5,6 +5,8 @@ import subprocess
 from Crypto.Cipher import AES
 import pathlib
 from functools import reduce
+from hashlib import sha3_256
+
 
 def main_menu():
     print('welcome to the automation script\n\n'
@@ -43,13 +45,21 @@ def all_devices(device_list):
     return device_list
 
 
-def one_or_all_or_new(choice_input, device_list):
+def one_or_all_or_new(choice_input, environment_config):
+    device_list = environment_config['site'].keys()
     if choice_input == 'one':
         return one_device(device_list)
     if choice_input == 'all':
         return all_devices(device_list)
     if choice_input == 'new':
-        return encrypt_config()
+        return encrypt_config(environment_config)
+
+
+def encrypt_config(environment_config):
+    password = create_hash(input("\n\nPlease enter in the password."
+                                 "If you forget this, you'll have to rewrite the config\n\n"))
+    print('encrypting the config now. This will exit when successful')
+    return encrypt(environment_config, password)
 
 
 def local_script(device_name, environment_config):
@@ -143,6 +153,7 @@ def decrypt(environment_config, password):
         environment_config['site'][i]['hostname'] = decrypt_string(environment_config['site'][i]['hostname'], password)
     return environment_config
 
+
 def encrypt(environment_config, password):
     device_list = environment_config['site'].keys()
     for i in device_list:
@@ -152,15 +163,17 @@ def encrypt(environment_config, password):
     return environment_config
 
 
-
 def main(environment_config, log_location):
+    choice = main_menu()
+    if choice == 'new':
+        one_or_all_or_new(choice, environment_config)
+        return environment_config
     password = create_hash(input('please input your password\n'))
-    environment_config_decrypted = json.loads(dump(decrypt(environment_config, password)))
-    return encrypt(final_analysis(configure_device(one_or_all_or_new(main_menu(),
-                                                      list(environment_config_decrypted['site'].keys())),
-                                           environment_config_decrypted),
-                          list(environment_config_decrypted['site'].keys()),
-                          log_location), password)
+    environment_config_decrypted = json.loads(decrypt(environment_config, password))
+    device_list = one_or_all_or_new(choice, environment_config_decrypted)
+    return encrypt(final_analysis(configure_device(device_list, environment_config_decrypted),
+                                  list(environment_config_decrypted['site'].keys()),
+                                  log_location), password)
 
 
 if __name__ == '__main__':
