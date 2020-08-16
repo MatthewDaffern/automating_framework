@@ -71,7 +71,3 @@ config['site']['switch']['hostname'] = '127.0.0.1'
 json.dump(config, file)
 file.close()
 
-import main as test
-
-result = test.one_or_all_or_new(test.main_menu(), config)
-print(result)
