@@ -1,6 +1,6 @@
 import datetime
 import json
-import paramiko
+import netmiko
 import subprocess
 from Crypto.Cipher import AES
 from hashlib import sha3_256
@@ -70,8 +70,8 @@ def one_or_all_or_new(choice_input, environment_config):
 # Backend Stuff
 def encrypt_config(environment_config):
     """Says what it's intended for"""
-    password = create_hash(input("\n\nPlease enter in the password."
-                                 "If you forget this, you'll have to rewrite the config\n\n"))
+    password = input("\n\nPlease enter in the password."
+                                 "\n\nIf you forget this, you'll have to rewrite the config\n\n")
     print('encrypting the config now. This will exit when successful')
     return encrypt(environment_config, password)
 
@@ -88,6 +88,7 @@ def local_script(device_name, environment_config):
         return environment_config
 
 
+# pass
 def apply_local_config(device_name, environment_config):
     """this is just logic for the local script function."""
     return local_script(device_name, environment_config)
@@ -96,8 +97,14 @@ def apply_local_config(device_name, environment_config):
 def apply_config(device_name, username, password, config_lines, environment_config):
     """"apply's a remote config using password based authentication and paramiko"""
     if environment_config['site'][device_name]['remote_or_local_script'] == 'remote':
-        client = paramiko.client.SSHClient()
-        client.connect(environment_config['site'][device_name]['hostname'], username=username, password=password)
+        config = {
+            'host'
+        }
+
+        client.connect(environment_config['site'][device_name]['hostname'],
+                       username=username,
+                       password=password)
+        client = netmiko.ConnectHandler()
         result = list()
         for i in config_lines:
             stdin, stdout, stderr = client.exec_command(i)
@@ -108,6 +115,7 @@ def apply_config(device_name, username, password, config_lines, environment_conf
         return environment_config
 
 
+# pass
 def configure_action(device_name, environment_config):
     """ configures a single device"""
     return apply_config(device_name,
@@ -117,6 +125,7 @@ def configure_action(device_name, environment_config):
                         environment_config)
 
 
+# pass
 def read_action(device_name, environment_config):
     """ reads a single device"""
     return apply_config(device_name,
@@ -163,24 +172,26 @@ def final_analysis(environment_config, device_list, log_location):
 # ================================================================================================================
 # Encrypting strings
 # Pass
-def create_hash(pass_phrase_input):
+def create_hash(pass_phrase_input_hash):
     """AES requires a fixed byte length for any password input. I think this one is 32 bytes."""
-    hash_object = sha3_256(str.encode(pass_phrase_input))
+    hash_object = sha3_256(str.encode(pass_phrase_input_hash))
     return hash_object.digest()
 
 
 # Pass
-def encrypt_string(string_input, pass_phrase_input):
-    """Since we don't actually want to do file operations(it's insecure), we'll be dumping the file into memory and encrypting/decrypting only the strings."""
-    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX)
+def encrypt_string(string_input, pass_phrase_input_encrypt):
+    """Since we don't actually want to do file operations(it's insecure),
+       we'll be dumping the file into memory and encrypting/decrypting only the strings."""
+    cipher = AES.new(create_hash(pass_phrase_input_encrypt), AES.MODE_EAX)
     encrypted_password = cipher.encrypt(str.encode(string_input))
     return encrypted_password, cipher.nonce
 
 
 # Pass
-def decrypt_string(encrypted_tuple, pass_phrase_input):
-    """Since we don't actually want to do file operations(it's insecure), we'll be dumping the file into memory and encrypting/decrypting only the strings."""
-    cipher = AES.new(create_hash(pass_phrase_input), AES.MODE_EAX, encrypted_tuple[1])
+def decrypt_string(encrypted_tuple, pass_phrase_input_decrypt):
+    """Since we don't actually want to do file operations(it's insecure),
+       we'll be dumping the file into memory and encrypting/decrypting only the strings."""
+    cipher = AES.new(create_hash(pass_phrase_input_decrypt), AES.MODE_EAX, encrypted_tuple[1])
     decrypted_password = bytes.decode(cipher.decrypt(encrypted_tuple[0]))
     return decrypted_password
 
@@ -198,29 +209,38 @@ def decrypt(environment_config, password):
 
 
 def encrypt(environment_config, password):
+    print(environment_config)
     device_list = environment_config['site'].keys()
     for i in device_list:
         environment_config['site'][i]['username'] = encrypt_string(environment_config['site'][i]['username'], password)
         environment_config['site'][i]['password'] = encrypt_string(environment_config['site'][i]['password'], password)
         environment_config['site'][i]['hostname'] = encrypt_string(environment_config['site'][i]['hostname'], password)
     return environment_config
+
+# PASS
+def config_loader(config_name):
+    file = open(config_name, 'r+')
+    return json.load(file)
+
 # ================================================================================================================
 
 
 def main(environment_config, log_location):
     """messy messy logic."""
     choice = main_menu()
+    config = config_loader(environment_config)
     if choice == 'new':
-        one_or_all_or_new(choice, environment_config)
-        return environment_config
-    password = create_hash(input('please input your password\n'))
-    environment_config_decrypted = json.loads(decrypt(environment_config, password))
-    device_list = one_or_all_or_new(choice, environment_config_decrypted)
-    result = final_analysis(configure_device(device_list, environment_config_decrypted),
-                            list(environment_config_decrypted['site'].keys()),
+        one_or_all_or_new(choice, config)
+        return config
+    password = input('alright, time to decrypt. Enter Dat Password.')
+    config_decrypted = json.loads(decrypt(config, password))
+    device_list = one_or_all_or_new(choice, config_decrypted)
+    result = final_analysis(configure_device(device_list, config_decrypted),
+                            list(config_decrypted['site'].keys()),
                             log_location)
     return encrypt(result, password)
 
 
 if __name__ == '__main__':
-    main('config.json', 'result.log')
+    """main('config.json', 'result.log')"""
+    main('test.json', 'result.log')

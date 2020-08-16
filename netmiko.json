@@ -1,0 +1,23 @@
+{"connection": 
+  {"device_type": "cisco_switch",
+  "host": "127.0.0.1",
+  "username": "admin",
+  "password": "lol"},
+ "commands":
+  {"hostname": ["hostname SD17XXXXX-Switch1"],
+  "new_account": ["username skidata password SD17XXXXX@S3ntry 15"],
+  "banner": ["banner motd #Unauthorized access to this device is prohibited!# "],
+  "enable": ["enable secret 5 SD17XXXXX@S3ntry"],
+  "gi0/0": ["1", "2", "3"],
+  "gi0/1": ["1", "2", "3"],
+  "gi0/2": ["1", "2", "3"],
+  "gi0/3": ["1", "2", "3"],
+  "gi0/4": ["1", "2", "3"],
+  "gi0/5": ["1", "2", "3"],
+  "gi0/6": ["1", "2", "3"],
+  "gi0/7": ["1", "2", "3"],
+  "gi0/8": ["1", "2", "3"],
+  "gi0/9": ["1", "2", "3"],
+  "management vlan": ["interface vlan 1", "ip address 10.45.0.134 255.255.0.0 10.45.0.1"]
+}
+}
