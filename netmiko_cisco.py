@@ -9,18 +9,15 @@ def import_connection_settings(file_name):
 
 
 def process_connection(config):
-    processed_config = dict()
-    processed_config['commands'] = config['commands']
-    processed_config['connection'] = netmiko.ConnectHandler(config['config'])
-    return processed_config
+    config['connection'] = netmiko.ConnectHandler(**config['config'])
+    return config
 
 
 def process_commands(config_and_connection_object):
-    config_and_connection = config_and_connection_object
-    config_and_connection['result'] = list()
-    for i in config_and_connection['commands']:
-        config_and_connection['result'].append(config_and_connection['connection'].send_config_set(i))
-    return config_and_connection
+    config_and_connection_object['result'] = list()
+    for i in config_and_connection_object['commands']:
+        config_and_connection_object['result'].append(config_and_connection_object['connection'].send_config_set(i))
+    return config_and_connection_object
 
 
 def print_result(config_connection_and_result_object):
@@ -28,14 +25,14 @@ def print_result(config_connection_and_result_object):
     file = open(file_name, 'a+')
     for i in config_connection_and_result_object['result']:
         print(i)
-        file.append(i)
+        file.write(i)
     file.close()
     print('\n\n\n Your config result is in result.txt')
     return config_connection_and_result_object
 
 
 def main():
-    load_config = import_connection_settings('netmiko.json')
+    load_config = import_connection_settings('netmiko_cisco.json')
     processed_connection = process_connection(load_config)
     result = process_commands(processed_connection)
     print_output = print_result(result)
