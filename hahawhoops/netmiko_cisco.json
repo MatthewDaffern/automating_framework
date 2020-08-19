@@ -1,0 +1,23 @@
+{"config":
+  {"device_type": "cisco_s300",
+  "host": "127.0.0.1",
+  "username": "nerd",
+  "password": "u_thought"},
+ "commands":
+  {"hostname": ["hostname __HOSTNAME"],
+  "new_account": ["username __USERNAME password __PASSWORD 15"],
+  "banner": ["banner motd #Unauthorized access to this device is prohibited!# "],
+  "enable": ["enable secret 5 __PASSWORD"],
+  "gi0/1": ["int gi0/1", "switchport mode access", "switchport access vlan 1"],
+  "gi0/2": ["int gi0/2", "switchport mode access", "switchport access vlan 1"],
+  "gi0/3": ["int gi0/3", "switchport mode access", "switchport access vlan 1"],
+  "gi0/4": ["int gi0/4", "switchport mode access", "switchport access vlan 1"],
+  "gi0/5": ["int gi0/5", "switchport mode access", "switchport access vlan 1"],
+  "gi0/6": ["int gi0/6", "switchport mode access", "switchport access vlan 1"],
+  "gi0/7": ["int gi0/7", "switchport mode access", "switchport access vlan 1"],
+  "gi0/8": ["int gi0/8", "switchport mode access", "switchport access vlan 1"],
+  "gi0/9": ["int gi0/9", "switchport mode access", "switchport access vlan 1"],
+  "gi0/10": ["int gi0/10", "switchport mode trunk", "switchport trunk allowed vlan 1"],
+  "management vlan": ["interface vlan 1", "ip address 10.45.0.134 255.255.0.0 10.45.0.1"]
+}
+}

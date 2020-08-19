@@ -7,7 +7,11 @@ def import_connection_settings(file_name):
         result = load(config)
     return result
 
+<<<<<<< HEAD
 #yada yada
+=======
+
+>>>>>>> 3b1817ee8b2760edb71a1179e7e63d9fde61ac88
 def process_connection(config):
     config['connection'] = netmiko.ConnectHandler(**config['config'])
     return config
