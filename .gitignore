@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 nornir.log
+*.json
+
+
 # C extensions
 *.so
 .idea/
