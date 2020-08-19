@@ -7,7 +7,7 @@ def import_connection_settings(file_name):
         result = load(config)
     return result
 
-
+#yada yada
 def process_connection(config):
     config['connection'] = netmiko.ConnectHandler(**config['config'])
     return config
